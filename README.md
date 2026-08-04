@@ -1,71 +1,84 @@
-# MySQL Assignment 2 - Querying Data
-**Module:** Data Analytics (DA) 
-**Database:** Employee Database 
+# Employee Database Management System
 
-## Project Overview
-This assignment builds on the Employee Database created in Assignment 1. It covers
-data insertion, filtering, sorting, aggregation, grouping, joins, and window functions
-using MySQL.
+DDL Commands and Data Integrity Constraints — MySQL Assignment 1
 
-## Files Included
-- `MySQL_Assignment_2_Complete.sql` — full script containing data insertion and all
-  required queries, ready to run top to bottom in MySQL.
-- `README.md` — this file.
+## Project Objective
+This project designs an Employee Database for an organization that needs to track its
+employees, the departments they belong to, and the locations they work from. The
+database is built using MySQL DDL commands, with constraints applied so the data
+stays accurate, consistent, and free of duplicate or missing values.
+
+## Files in This Submission
+- `Employee_Database_Assignment.sql` — Full MySQL script (table creation, alterations,
+  renaming, truncation, dropping, constraint-enforced rebuild, sample data, and
+  verification queries)
+- `README.md` — This file
+- Execution screenshots (PDF/DOCX) — Query results captured from MySQL Workbench
 
 ## Database Structure
-| Table | Columns |
+Three related tables:
+
+| Table | Key Columns |
 |---|---|
-| `departments` | department_id (PK), department_name |
-| `location` | location_id (PK), location_name |
-| `employees` | employee_id (PK), employee_name, gender, age, hire_date, designation, salary, department_id (FK), location_id (FK), email |
+| **Departments** | `department_id` (PK), `department_name` |
+| **Location** | `location_id` (PK), `location_name` |
+| **Employees** | `employee_id` (PK), `employee_name`, `gender`, `age`, `hire_date`, `designation`, `salary`, `department_id` (FK), `location_id` (FK), `email` |
+
+The Employees table connects to both Departments and Location through foreign keys,
+so every employee record traces back to its department and work location.
+
+## DDL Commands Covered
+- **CREATE** – build the database and its tables
+- **ALTER** – add, modify, drop, or rename columns
+- **RENAME** – rename tables
+- **TRUNCATE** – clear all records from a table
+- **DROP** – remove tables and the database
+
+## Constraints Applied
+| Column | Constraint | Purpose |
+|---|---|---|
+| `department_id` | PRIMARY KEY | Uniquely identifies each department |
+| `department_name` | NOT NULL, UNIQUE | Prevents blank or duplicate department names |
+| `location_id` | PRIMARY KEY, AUTO_INCREMENT | Sequential unique location IDs |
+| `location_name` | NOT NULL, UNIQUE | Prevents blank or duplicate locations |
+| `employee_id` | PRIMARY KEY | Uniquely identifies each employee |
+| `employee_name` | NOT NULL | A record cannot be saved without a name |
+| `gender` | CHECK (M/F only) | Restricts value to 'M' or 'F' |
+| `age` | CHECK (age >= 18) | Blocks any employee below 18 |
+| `hire_date` | DEFAULT (current_date) | Auto-fills today's date if not provided |
+| `email` | UNIQUE | Prevents duplicate email addresses |
+| `department_id`, `location_id` | FOREIGN KEY | Links Employees to Departments and Location |
 
 ## How to Run
-1. Open MySQL Workbench (or your MySQL client of choice).
-2. Make sure the `employee` database and its tables (`departments`, `location`,
-   `employees`) already exist, as created in Assignment 1.
-3. Open `MySQL_Assignment_2_Complete.sql`.
-4. Run the script from top to bottom.
-   - If `employees` already has 30 rows, skip the `INSERT INTO` statements at the
-     top and start execution from Section 1, to avoid duplicate primary key errors.
-5. Take a screenshot of each query's result grid to include in your submission PDF.
+1. Open **MySQL Workbench** (or any MySQL client).
+2. Open `Employee_Database_Assignment.sql` in a new query tab.
+3. Select all (**Ctrl+A**) and execute the entire script in one go (lightning bolt icon,
+   or `source Employee_Database_Assignment.sql;` on the command line).
+   > Run the whole script top to bottom — it drops and recreates the database partway
+   > through, so running it out of order will cause errors.
+4. Once complete, refresh the **Schemas** panel and expand `employee` → `Tables` to
+   confirm `Departments_Info`, `Locations`, and `Employees` exist.
+5. Verify the data with:
+   ```sql
+   SELECT * FROM Employees;
+   ```
 
-## Sections Covered
+## Testing the Constraints
+Sample data was inserted into each table to confirm the constraints behave as expected:
+- Departments: HR, Finance, IT, Sales
+- Locations: Madurai, Chennai, Coimbatore, Trichy
+- Employees: 3 sample records with valid ages, gender, and unique emails
 
-### Section 1: Clause & Operators
-- `DISTINCT` — retrieves unique salary values.
-- `AS` (alias) — renames `age` and `salary` columns in output only.
-- `WHERE` — filters by salary and hire date; identifies and fills a missing
-  `designation` value using `IS NULL` and `UPDATE`.
+The `hire_date` column was intentionally left out of the insert statement to confirm
+the `DEFAULT (current_date)` constraint auto-fills it correctly.
 
-### Section 2: Sorting and Grouping Data
-- `ORDER BY` — sorts by department ascending, salary descending.
-- `LIMIT` — returns the first 5 employees hired in 2018.
-- Aggregate functions — `SUM`, `MIN`, `MAX`, `AVG` for salary and age analysis.
-- `GROUP BY` — max salary per location; average salary per Analyst-type designation.
-- `HAVING` — filters grouped results (departments with <3 employees; locations
-  where average female age is below 30).
-
-### Section 3: Joins
-- `INNER JOIN` — employees matched to their departments.
-- `LEFT JOIN` — all departments, including those with zero employees.
-- `RIGHT JOIN` — all locations, including those with no employees assigned.
-- `CROSS JOIN` — every department-location combination.
-- `SELF JOIN` — pairs of employees within the same department.
-
-### Section 4: Window Functions
-- `RANK()` — overall salary ranking (skips ranks after ties).
-- `DENSE_RANK()` — salary ranking within each department (no skipped ranks).
-- `SUM() OVER (PARTITION BY ... ORDER BY ...)` — running total of salary per
-  department.
-
-Key Skills Demonstrated
-
-Data retrieval and filtering using SQL clauses and operators
-Aggregation and grouped data analysis
-Relational data handling through multiple join strategies
-Analytical querying using window functions
-Translating business requirements into structured SQL logic
-
-Conclusion
-
-This assignment demonstrates a comprehensive, hands-on application of SQL querying techniques essential to data analysis — from basic data retrieval to advanced window functions. By working with a realistic, multi-table employee dataset, the project highlights the ability to filter, sort, aggregate, and join relational data effectively, as well as to translate practical business questions into precise, efficient SQL queries. These skills form a strong foundation for real-world data analytics tasks, including reporting, performance tracking, and organizational decision-making support.
+## Conclusion
+- The Employee database was built step by step using CREATE, ALTER, RENAME,
+  TRUNCATE, and DROP.
+- Departments, Location, and Employees were designed as three connected tables.
+- PRIMARY KEY, FOREIGN KEY, NOT NULL, UNIQUE, CHECK, and DEFAULT constraints
+  were applied to keep the data reliable.
+- Invalid entries, such as an age under 18 or a gender outside M/F, are rejected
+  automatically by the constraints.
+- Sample records were inserted and checked to confirm every constraint works as
+  intended.
